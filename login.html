@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Phramacy</title>
+
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/index.css') }}"
+    />
+  </head>
+  <body>
+    <section class="parentContainer">
+      <div class="loginImgContainer"></div>
+      <article class="loginPanel">
+        <img
+          class="logoImg"
+          src="{{ url_for('static', filename = '/images/logo.png') }}"
+          alt="logoImg"
+        />
+
+        <form id="loginForm" method="POST" action="/login">
+          <h1 class="title">Sign In</h1>
+          <input
+            class="loginInput"
+            type="text"
+            name="userId"
+            placeholder="User Id"
+            required
+          />
+          <input
+            class="loginInput"
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <input type="submit" class="btn loginBtn" value="Login" id='bt'>
+        </form>
+      </article>
+
+
+    </section>
+    {% if error %}
+      <script>
+        alert('Invalid Credentials')
+      </script>
+    {% endif %}
+
+
+    <script>
+      document.querySelector("#loginForm").addEventListener("submit", function(){
+        console.log('submitting')
+      });
+
+    </script>
+
+  </body>
+</html>

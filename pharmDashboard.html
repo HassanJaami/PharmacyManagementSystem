@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PMS</title>
+    <link rel="stylesheet" href="../static/styles/index.css" />
+    <!-- for table -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"
+    />
+
+    <script
+      src="http://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf8"
+      src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"
+    ></script>
+    <!-- for table -->
+  </head>
+  <body>
+    <!-- model -->
+    <section class="model">this is a model</section>
+    <nav>
+      <section class="navCenter">
+        <img
+          class="dashboardLogo"
+          src="{{ url_for('static', filename = '/images/logo.png') }}"
+          alt="logoImg"
+        />
+        <div class="navLinks">
+          <a
+            class="btn"
+            href="{{ url_for('static', filename='/pages/products.html') }}"
+            >Products</a
+          >
+          <a
+            class="btn"
+            href="{{ url_for('static', filename='/pages/sales.html') }}"
+            >Sales</a
+          >
+
+          <form
+            id="logoutForm"
+            method="POST"
+            class="btn"
+            action="/logout"
+            style="padding: 0; background: transparent"
+          >
+            <input
+              type="submit"
+              value="Log Out"
+              class="logoutBtn btn alert-danger"
+            />
+          </form>
+
+          <!-- <button class="logoutBtn btn alert-danger">Log Out</button> -->
+        </div>
+        <div class="hamburger">
+          <div class="bar"></div>
+        </div>
+      </section>
+    </nav>
+
+    <section class="pharmContent">
+      <section class="tableContainer">
+        <h3>Products</h3>
+        <table id="productsTable" class="table">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Price Per Unit</th>
+              <th>Vendor</th>
+              <th>Description</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+        </table>
+        <a id="AddProductToOrderBtn" class="btn">Add Selected to Order</a>
+      </section>
+
+      <section class="tableContainer">
+        <h3>Current Order</h3>
+        <table id="orderTable" class="table">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Price Per Unit</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+        </table>
+        <a id="removeOrderBtn" class="btn">Remove Selected</a>
+        <a id="clearOrderBtn" class="btn">Clear Order</a>
+        <br />
+        <a id="completeOrderBtn" class="btn" style="margin-top: 0.5rem"
+          >Complete Order</a
+        >
+      </section>
+    </section>
+
+    <form class="inputQuantity form">
+      <div class="form-row">
+        <label class="form-label">Enter Quantity</label>
+        <input
+          required
+          id="inputQuantity"
+          class="form-input"
+          type="number"
+          min="1"
+          name="quantityInput"
+          value="1"
+        />
+      </div>
+      <button class="btn inputQuantityBtn">Ok</button>
+    </form>
+
+    <form class="inputName form">
+      <div class="form-row">
+        <label class="form-label">Enter Name</label>
+        <input required id="inputName" class="form-input" type="text" />
+      </div>
+      <button class="btn inputNameBtn">Ok</button>
+    </form>
+
+    <footer>
+      <section class="footerCenter">&copy; All Right Reserved PMS</section>
+    </footer>
+
+    <script>
+      function hideModel() {
+        document.querySelector(".model").style.display = "none";
+      }
+      function showModel(content, time) {
+        $(".model").text(content);
+        $(".model").css("display", "block");
+        setTimeout(hideModel, time);
+      }
+      $(document).ready(function () {
+        //add event listener on rows of tables
+        var table = $(".table").DataTable();
+
+        $(".table tbody").on("click", "tr", function () {
+          if ($(this).hasClass("selected")) {
+            $(this).removeClass("selected");
+          } else {
+            $(".table").DataTable().$("tr.selected").removeClass("selected");
+            $(this).addClass("selected");
+          }
+        });
+
+        //add product to order
+        $("#AddProductToOrderBtn").on("click", function () {
+          table = $("#productsTable").DataTable();
+          let selectedRow = table.row(".selected");
+          if (!selectedRow.data()) {
+            //if no row is selected
+            showModel("Please select a product!!", 2000);
+            return;
+          }
+
+          $(".inputQuantity").css({ top: "10%" });
+        });
+
+        //getting quantity
+        $(".inputQuantityBtn ").on("click", (e) => {
+          e.preventDefault();
+
+          table = $("#productsTable").DataTable();
+          let selectedRow = table.row(".selected");
+          if (!selectedRow.data()) {
+            //if no row is selected
+            showModel("Please select a product!!", 2000);
+            return;
+          }
+
+          let inputQuantityForm = $(".inputQuantity");
+          inputQuantityForm.css({ top: "-100%" });
+
+          let quantity = $("#inputQuantity").val();
+          if (quantity == 0 || quantity == null) {
+            return;
+          }
+
+          let orderTable = $("#orderTable").DataTable();
+          table = $("#orderTable").DataTable();
+
+          if (quantity > selectedRow.data().product_quantity) {
+            showModel("Entered quantity exceeds the present stock!!", 2000);
+            return;
+          }
+
+          let productsTable = $("#productsTable").DataTable();
+          let productsData = productsTable.rows().data();
+
+          //subtracting quantity from original products table
+          let index = productsData.indexOf(selectedRow.data());
+          productsData[index].product_quantity =
+            productsData[index].product_quantity - quantity;
+          productsTable.rows().remove().draw();
+          for (let i = 0; i < productsData.length; i++) {
+            const newRow = productsData[i];
+            productsTable.row.add(newRow).draw();
+          }
+
+          //adding product to order table
+          table.row
+            .add([
+              selectedRow.data().product_id,
+              selectedRow.data().product_name,
+              selectedRow.data().product_PPU,
+              quantity,
+            ])
+            .draw(false);
+        });
+
+        // delete a product from order
+        $("#removeOrderBtn").click(() => {
+          let orderTable = $("#orderTable").DataTable();
+          let orderSelectedRow = $("#orderTable").DataTable().rows(".selected");
+          let orderQuantity = orderSelectedRow.data()[0][3];
+          let orderId = orderSelectedRow.data()[0][0];
+
+          let productsTable = $("#productsTable").DataTable();
+          let productsData = productsTable.rows().data();
+
+          //adding quantity back to original products table
+
+          let productRow = productsData.filter(
+            (row) => row.product_id == orderId
+          );
+
+          let index = -1;
+          for (let i = 0; i < productsData.length; i++) {
+            if (productsData[i].product_id == productRow[0].product_id)
+              index = i;
+          }
+
+          productsData[index].product_quantity =
+            parseInt(productsData[index].product_quantity) +
+            parseInt(orderQuantity);
+          productsTable.rows().remove().draw();
+          for (let i = 0; i < productsData.length; i++) {
+            const newRow = productsData[i];
+            productsTable.row.add(newRow).draw();
+          }
+
+          orderSelectedRow.remove().draw();
+        });
+
+        //clear order
+        $("#clearOrderBtn").click(() => {
+          let orderTable = $("#orderTable").DataTable();
+          orderTable.rows().remove().draw();
+          window.location.reload();
+        });
+
+        //complete order
+        $("#completeOrderBtn").click(() => {
+          table = $("#orderTable").DataTable();
+          if (table.rows().data()[0] == null) {
+            //if no row is selected
+            showModel("No product in the order!!", 2000);
+            return;
+          }
+          $(".inputName").css({ top: "10%" });
+        });
+
+        //get name and complete the order
+        $(".inputNameBtn").click((e) => {
+          e.preventDefault();
+          let inputNameForm = $(".inputName");
+          inputNameForm.css({ top: "-100%" });
+
+          let customerName = $("#inputName").val();
+          console.log(customerName);
+          let orderPrice = 0;
+
+          let orderTableData = $("#orderTable").DataTable().rows().data();
+          let sendData = [];
+
+          for (let i = 0; i < orderTableData.length; i++) {
+            sendData.push(orderTableData[i]);
+            orderPrice += orderTableData[i][2] * orderTableData[i][3];
+          }
+          console.log(orderPrice);
+
+          sendData = JSON.stringify(sendData);
+
+          console.log(sendData, "qqqqqqqqqqq");
+          $.ajax({
+            url: "/api/completeOrder/" + customerName + "/" + orderPrice, // url where to submit the request
+            type: "POST", // type of action POST || GET
+            data: sendData, // post data || get data
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+              console.log(result);
+              window.location.reload();
+            },
+
+            error: function (xhr, resp, text) {
+              console.log(this.url);
+              console.log(xhr, resp, text);
+            },
+          });
+        });
+
+        //fill products table
+        $.ajax({
+          type: "GET",
+          url: "/api/products",
+          success: function (result) {
+            console.log(result);
+            myData = JSON.parse(result);
+            if (myData != null || myData != "") {
+              table = $("#productsTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "product_id" },
+                  { data: "product_name" },
+                  { data: "product_PPU" },
+                  { data: "product_vendor" },
+                  { data: "product_description" },
+                  { data: "product_quantity" },
+                ],
+              });
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
