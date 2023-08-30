@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PMS</title>
+    <link rel="stylesheet" href="../static/styles/index.css" />
+    <!-- <link
+      type="text/css"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/index.css') }}"
+    /> -->
+
+    <!-- for table -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"
+    />
+
+    <script
+      src="http://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf8"
+      src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"
+    ></script>
+    <!-- for table -->
+  </head>
+
+  <body class="adminBody">
+    <nav>
+      <section class="navCenter">
+        <img
+          class="dashboardLogo"
+          src="{{ url_for('static', filename = '/images/logo.png') }}"
+          alt="logoImg"
+        />
+        <div class="navLinks">
+          <a
+            class="btn"
+            href="{{ url_for('static', filename='/pages/pharmasists.html') }}"
+            >Pharmacists</a
+          >
+          <a
+            class="btn"
+            href="{{ url_for('static', filename='/pages/products.html') }}"
+            >Products</a
+          >
+          <a
+            class="btn"
+            href="{{ url_for('static', filename='/pages/sales.html') }}"
+            >Sales</a
+          >
+
+          <form
+            id="logoutForm"
+            method="POST"
+            class="btn"
+            action="/logout"
+            style="padding: 0; background: transparent"
+          >
+            <input
+              type="submit"
+              value="Log Out"
+              class="logoutBtn btn alert-danger"
+            />
+          </form>
+
+          <!-- <button class="logoutBtn btn alert-danger">Log Out</button> -->
+        </div>
+        <div class="hamburger">
+          <div class="bar"></div>
+        </div>
+      </section>
+    </nav>
+
+    <!-- notificatoin center -->
+    <button class="btn notificationBtn">
+      <img src="../static/images/exclamation-mark.png" alt="" />
+    </button>
+    <section class="notificatonCenter">
+      <article class="notify">
+        <p class="lowQuantity alert-danger" style="display: none">
+          Some products are low on quantity!!
+        </p>
+        <p class="closeToExpiry alert-danger" style="display: none">
+          Some products are close to expiry!!
+        </p>
+        <p class="expired alert-danger" style="display: none">
+          Some products have expired!!
+        </p>
+        <button class="btn showNotificationTables">Show Details</button>
+      </article>
+      <article class="noNotify">
+        <p>No notifications. Everything is going good!!</p>
+      </article>
+    </section>
+
+    <!-- tables for notifications -->
+
+    <section class="notificationTalbes">
+      <section class="tableContainer lowQuantityTable" style="display: none">
+        <h3>Products Low on Quantity</h3>
+        <table id="lowQuantityTable" border="1">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Price Per Unit</th>
+              <th>Vendor</th>
+              <th>Description</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+        </table>
+      </section>
+
+      <section class="tableContainer closeToExpiryTable" style="display: none">
+        <h3>Products Close to Expiry</h3>
+        <table id="closeToExpiryTable" border="1">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Batch No</th>
+              <th>Batch Quantity</th>
+              <th>Batch Expiry</th>
+            </tr>
+          </thead>
+        </table>
+      </section>
+
+      <section class="tableContainer expiredTable" style="display: none">
+        <h3>Products Expired</h3>
+        <table id="expiredTable" border="1">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Name</th>
+              <th>Batch No</th>
+              <th>Batch Quantity</th>
+              <th>Batch Expiry</th>
+            </tr>
+          </thead>
+        </table>
+      </section>
+    </section>
+
+    <section class="adminContent">
+      <section class="adminContentCenter">
+        <a href="{{ url_for('static', filename='/pages/pharmasists.html') }}"
+          >Pharmacists</a
+        >
+        <a href="{{ url_for('static', filename='/pages/products.html') }}"
+          >Products</a
+        >
+        <a href="{{ url_for('static', filename='/pages/sales.html') }}"
+          >Sales</a
+        >
+      </section>
+    </section>
+    <footer>
+      <section class="footerCenter">&copy; All Right Reserved PMS</section>
+    </footer>
+
+    <!-- <script src="http://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script> -->
+
+    <script>
+
+      let hamburger = document.querySelector(".hamburger");
+      hamburger.addEventListener("click", () => {
+        document.querySelector(".navLinks").classList.toggle("active");
+      });
+      let notifyBtn = document.querySelector(".notificationBtn");
+      notifyBtn.addEventListener("click", () => {
+        document.querySelector(".notificatonCenter").classList.toggle("active");
+      });
+
+      document
+        .querySelector(".showNotificationTables")
+        .addEventListener("click", () => {
+          console.log("eeee");
+          document
+            .querySelector(".notificationTalbes")
+            .classList.toggle("active");
+        });
+    </script>
+
+    <script>
+      function hideNoNotify() {
+        document.querySelector(".noNotify").style.display = "none";
+      }
+      function showNotification(className, tableName) {
+        document.querySelector(".notify").style.display = "block";
+        document.querySelector(className).style.display = "block";
+        document.querySelector(tableName).style.display = "block";
+      }
+      // productsLowOnStock
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "/api/productsLowOnStock",
+          success: function (result) {
+            console.log("productsLowOnStock");
+            console.log(result);
+            myData = JSON.parse(result);
+            if (myData != null && myData != "") {
+              hideNoNotify();
+              showNotification(".lowQuantity", ".lowQuantityTable");
+              document.querySelector(".notificationBtn img").src =
+                "../static/images/exclamation-mark2.png";
+
+              table = $("#lowQuantityTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "product_id" },
+                  { data: "product_name" },
+                  { data: "product_PPU" },
+                  { data: "product_vendor" },
+                  { data: "product_description" },
+                  { data: "product_quantity" },
+                ],
+              });
+            }
+          },
+        });
+
+        // productsCloseToExpire
+        $.ajax({
+          type: "GET",
+          url: "/api/productsCloseToExpire",
+          success: function (result) {
+            console.log("productsCloseToExpire");
+            console.log(result);
+
+            myData = JSON.parse(result);
+            if (myData != null && myData != "") {
+              hideNoNotify();
+              showNotification(".closeToExpiry", ".closeToExpiryTable");
+              document.querySelector(".notificationBtn img").src =
+                "../static/images/exclamation-mark2.png";
+
+              table = $("#closeToExpiryTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "product_id" },
+                  { data: "product_name" },
+                  { data: "batch_no" },
+                  { data: "batch_quantity" },
+                  { data: "batch_expiry" },
+                ],
+              });
+            }
+          },
+        });
+
+        // expiredProducts
+        $.ajax({
+          type: "GET",
+          url: "/api/expiredProducts",
+          success: function (result) {
+            console.log("expiredProducts");
+            console.log(result);
+            myData = JSON.parse(result);
+            if (myData != null && myData != "") {
+              hideNoNotify();
+              showNotification(".expired", ".expiredTable");
+
+              document.querySelector(".notificationBtn img").src =
+                "../static/images/exclamation-mark2.png";
+
+              table = $("#expiredTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "product_id" },
+                  { data: "product_name" },
+                  { data: "batch_no" },
+                  { data: "batch_quantity" },
+                  { data: "batch_expiry" },
+                ],
+              });
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
