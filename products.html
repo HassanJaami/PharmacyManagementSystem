@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Products</title>
+    <!-- <link
+      type="text/css"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/index.css') }}"
+    /> -->
+    <link rel="stylesheet" href="../styles/index.css" />
+
+    <!-- for table -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css" />
+
+    <script src="http://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <!-- for table -->
+</head>
+
+<body>
+    <!-- model -->
+    <section class="model">
+        this is a model
+    </section>
+
+    <!-- nav -->
+    <nav>
+        <section class="navCenter">
+            <img class="dashboardLogo" src="../images/logo.png" alt="logoImg" />
+            <div class="navLinks">
+                <a class="btn" href="./pharmasists.html">pharmacists</a>
+                <a class="btn" href="./products.html">products</a>
+                <a class="btn" href="./sales.html">sales</a>
+                <form id="logoutForm" method="POST" class="btn" action="/logout"
+                    style="padding: 0; background: transparent">
+                    <input type="submit" value="Log Out" class="logoutBtn btn alert-danger" />
+                </form>
+            </div>
+            <div class="hamburger">
+                <div class="bar"></div>
+            </div>
+        </section>
+    </nav>
+    <!-- nav -->
+
+    <!-- product options -->
+    <section class="productOptions">
+        <a href="#addProductForm" class="addProductBtn btn">Add Products</a>
+    </section>
+    <!-- product options -->
+
+    <section class="tableContainer">
+        <h3>Products</h3>
+        <table id="productsTable">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Price Per Unit</th>
+                    <th>Vendor</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+        </table>
+        <a id="deleteProductBtn" class="btn">Delete Selected</a>
+        <a href="#updateProductForm" id="updateProductBtn" class="btn">Update Selected</a>
+        <br>
+        <a href="#addBatchForm" id="addToBatchBtn" class="btn" style="margin-top: .5rem;">Add to Batch</a>
+    </section>
+
+    <section class="tableContainer">
+        <h3>Batches</h3>
+        <table id="batchTable">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Batch No</th>
+                    <th>Batch Quantity</th>
+                    <th>Batch Expiry</th>
+                </tr>
+            </thead>
+        </table>
+        <a id="deleteBatchBtn" class="btn">Delete Batch</a>
+    </section>
+
+    <!-- add product form -->
+    <form id="addProductForm" class="form" action="" method="">
+        <h3>Add Product</h3>
+        <div class="form-row">
+            <label class="form-label">Name </label>
+            <input class="form-input" type="text" name="name" required />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Price </label>
+            <input required class="form-input" type="number" name="price" />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Vendor </label>
+            <input required class="form-input" type="text" name="vendor" />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Description</label>
+            <input required class="form-input" type="text" name="desc" />
+        </div>
+        <input type="submit" id="addProductSubmit" class="btn" value="Add Product"></input>
+    </form>
+
+    <!-- end of add product form -->
+
+    <!-- add to batch form -->
+    <form id="addBatchForm" class="form" action="" method="">
+        <h3>Add to Batch</h3>
+        <div class="form-row">
+            <label class="form-label">Quantity </label>
+            <input required class="form-input" type="number" name="quantity" />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Expiry </label>
+            <input required class="form-input" type="date" name="batch_expiry" />
+        </div>
+        <input type="submit" id="addBatchSubmit" class="btn" value="Add to Batch"></input>
+    </form>
+
+    <!-- end of add to batch form -->
+
+    <!-- update pharm form -->
+    <form id="updateProductForm" class="form" action="" method="">
+        <h3>Update Product</h3>
+        <div class="form-row">
+            <label class="form-label">Name </label>
+            <input class="form-input" type="text" name="name" required />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Price </label>
+            <input required class="form-input" type="number" name="price" />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Vendor </label>
+            <input required class="form-input" type="text" name="vendor" />
+        </div>
+        <div class="form-row">
+            <label class="form-label">Description</label>
+            <input required class="form-input" type="text" name="desc" />
+        </div>
+        <input type="submit" id="updateProductSubmit" class="btn" value="Update product"></input>
+    </form>
+    <footer>
+        <section class="footerCenter">&copy; All Right Reserved PMS</section>
+    </footer>
+
+    <script>
+        let hamburger = document.querySelector( ".hamburger" );
+        hamburger.addEventListener( "click", () =>
+        {
+            document.querySelector( ".navLinks" ).classList.toggle( "active" );
+        } );
+
+        document.querySelector( '.addProductBtn' ).addEventListener( 'click', () =>
+        {
+            document.querySelector( '#addProductForm' ).classList.add
+                ( 'show' );
+        } )
+
+        document.querySelector( '#addToBatchBtn' ).addEventListener( 'click', () =>
+        {
+            document.querySelector( '#addBatchForm' ).classList.add
+                ( 'show' );
+        } )
+    </script>
+
+
+    <script>
+        function hideModel()
+        {
+            document.querySelector( '.model' ).style.display = "none";
+        }
+        function showModel( content, time )
+        {
+            $( ".model" ).text( content );
+            $( ".model" ).css( "display", "block" );
+            setTimeout( hideModel, time );
+        }
+        $( document ).ready( function ()
+        {
+            var myData;
+
+            // click on row to select
+            var table = $( "table" ).DataTable();
+
+            $( "table tbody" ).on( "click", "tr", function ()
+            {
+                if ( $( this ).hasClass( "selected" ) )
+                {
+                    $( this ).removeClass( "selected" );
+                } else
+                {
+                    table = $( "table" ).DataTable();
+                    table.$( "tr.selected" ).removeClass( "selected" );
+                    $( this ).addClass( "selected" );
+                }
+            } );
+            // click on row to select
+
+
+            $( "#addBatchSubmit" ).on( "click", function ( event )
+            {
+                event.preventDefault();
+                table = $( "#productsTable" ).DataTable();
+                let selectedRow = table.row( ".selected" );
+
+                if ( !selectedRow.data() )
+                {
+                    //if no row is selected
+                    showModel( "Please select a product!!", 2000 );
+                    return;
+                }
+                let id = selectedRow.data().product_id;
+                // send ajax
+                var formdata = $( "#addBatchForm" ).serializeArray();
+                var data = {};
+                $( formdata ).each( function ( index, obj )
+                {
+                    data[obj.name] = obj.value;
+                } );
+                data = JSON.stringify( data );
+
+                console.log( data );
+
+                $.ajax( {
+                    url: "/api/product/" + id, // url where to submit the request
+                    type: "POST", // type of action POST || GET
+                    data: data, // post data || get data
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function ( result )
+                    {
+                        // you can see the result from the console
+                        // tab of the developer tools
+                        console.log( result );
+                        window.location.reload();
+                    },
+                    error: function ( xhr, resp, text )
+                    {
+                        console.log( "nooooooooooooooooo" );
+                        console.log( this.url );
+                        console.log( xhr, resp, text );
+                    },
+                } );
+            } );
+
+            //update a product
+            $( "#updateProductBtn" ).click( ( e ) =>
+            {
+                table = $( "#productsTable" ).DataTable();
+                let selectedRow = table.row( ".selected" );
+                if ( !selectedRow.data() )
+                {
+                    //if no row is selected
+                    showModel( "Please select a product!!", 2000 );
+                    return;
+                }
+                document.querySelector( '#updateProductForm' ).classList.add
+                    ( 'show' );
+            } );
+
+
+            // click on button to update product
+            $( "#updateProductSubmit" ).on( "click", function ( event )
+            {
+                event.preventDefault();
+                table = $( "#productsTable" ).DataTable();
+                let selectedRow = table.row( ".selected" );
+                if ( !selectedRow.data() )
+                {
+                    //if no row is selected
+                    showModel( "Please select a product!!", 2000 );
+                    return;
+                }
+
+                let id = selectedRow.data().product_id;
+
+                // send ajax
+                var formdata = $( "#updateProductForm" ).serializeArray();
+                var data = {};
+                $( formdata ).each( function ( index, obj )
+                {
+                    data[obj.name] = obj.value;
+                } );
+                data = JSON.stringify( data );
+
+                console.log( data );
+
+                $.ajax( {
+                    url: "/api/product/" + id, // url where to submit the request
+                    type: "PUT", // type of action POST || GET
+                    data: data, // post data || get data
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function ( result )
+                    {
+                        // you can see the result from the console
+                        // tab of the developer tools
+                        console.log( result );
+                        //window.location.reload();
+                        window.location.href = "products.html"
+                    },
+                    error: function ( xhr, resp, text )
+                    {
+                        console.log( "nooooooooooooooooo" );
+                        console.log( this.url );
+                        console.log( xhr, resp, text );
+                    },
+                } );
+            } );
+
+            // delete a batch
+            $( "#deleteBatchBtn" ).click( function ()
+            {
+                table = $( "#batchTable" ).DataTable();
+                let selectedRow = table.row( ".selected" );
+
+                if ( !selectedRow.data() )
+                {
+                    //if now row is selected
+                    showModel( "Please select a batch!!", 2000 );
+                    return;
+                }
+
+                let id = selectedRow.data().product_id;
+                let batchNo = selectedRow.data().batch_no;
+
+                $.ajax( {
+                    url: '/api/batch/' + id + "/" + batchNo,
+                    type: "DELETE",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function ( result )
+                    {
+                        console.log( "batch deleted" );
+                        console.log( result );
+                    },
+                    error: function ( xhr, resp, text )
+                    {
+                        console.log( "nooooooooooooooooo" );
+                        console.log( this.url );
+                        console.log( xhr, resp, text );
+                    },
+                } )
+            } )
+            //delete a product
+            $( "#deleteProductBtn" ).click( function ()
+            {
+                table = $( "#productsTable" ).DataTable();
+                let selectedRow = table.row( ".selected" );
+
+                if ( !selectedRow.data() )
+                {
+                    //if now row is selected
+                    showModel( "Please select a product!!", 2000 );
+                    return;
+                }
+
+                let id = selectedRow.data().product_id;
+
+                $.ajax( {
+                    url: "/api/product/" + id, // url where to submit the request
+                    type: "DELETE", // type of action POST || GET
+                    //data: userName, // post data || get data
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function ( result )
+                    {
+                        // you can see the result from the console
+                        // tab of the developer tools
+                        console.log( result );
+                        selectedRow.remove().draw( false );
+                        window.location.reload();
+                    },
+                    error: function ( xhr, resp, text )
+                    {
+                        console.log( "nooooooooooooooooo" );
+                        console.log( this.url );
+                        console.log( xhr, resp, text );
+                    },
+                } );
+            } );
+
+            // form to add product:
+            // click on button to add pharm
+            $( "#addProductSubmit" ).on( "click", function ( event )
+            {
+                event.preventDefault();
+                // send ajax
+                var formdata = $( "#addProductForm" ).serializeArray();
+                var data = {};
+                $( formdata ).each( function ( index, obj )
+                {
+                    data[obj.name] = obj.value;
+                } );
+                data = JSON.stringify( data );
+
+                console.log( data );
+
+                $.ajax( {
+                    url: "/api/products", // url where to submit the request
+                    type: "POST", // type of action POST || GET
+                    data: data, // post data || get data
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function ( result )
+                    {
+                        // you can see the result from the console
+                        // tab of the developer tools
+                        console.log( result );
+                        window.location.reload();
+                    },
+                    error: function ( xhr, resp, text )
+                    {
+                        console.log( "nooooooooooooooooo" );
+                        console.log( this.url );
+                        console.log( xhr, resp, text );
+                    },
+                } );
+            } );
+
+
+
+            //doStuff
+            console.log( "hello" );
+            $.ajax( {
+                type: "GET",
+                url: "/api/products",
+                success: function ( result )
+                {
+                    console.log( result );
+                    myData = JSON.parse( result );
+                    if ( myData != null || myData != "" )
+                    {
+                        table = $( "#productsTable" ).DataTable( {
+                            data: myData,
+                            destroy: true,
+                            columns: [
+                                { data: "product_id" },
+                                { data: "product_name" },
+                                { data: "product_PPU" },
+                                { data: "product_vendor" },
+                                { data: "product_description" },
+                                { data: "product_quantity" },
+                            ],
+                        } );
+                    }
+                },
+            } );
+
+            $.ajax( {
+                type: "GET",
+                url: "/api/batches",
+                success: function ( result )
+                {
+                    console.log( result );
+                    myData = JSON.parse( result );
+                    if ( myData != null || myData != "" )
+                    {
+                        table = $( "#batchTable" ).DataTable( {
+                            data: myData,
+                            destroy: true,
+                            columns: [
+                                { data: "product_id" },
+                                { data: "batch_no" },
+                                { data: "batch_quantity" },
+                                { data: "batch_expiry" },
+                            ],
+                        } );
+                    }
+                },
+            } );
+        } );
+    </script>
+
+
+</body>
+
+</html>

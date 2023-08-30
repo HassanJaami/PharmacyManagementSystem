@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PMS</title>
+    <link rel="stylesheet" href="../styles/index.css" />
+
+    <!-- for table -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css"
+    />
+
+    <script
+      src="http://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      charset="utf8"
+      src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"
+    ></script>
+    <!-- for table -->
+  </head>
+  <body>
+    <!-- nav -->
+    <nav>
+      <section class="navCenter">
+        <img class="dashboardLogo" src="../images/logo.png" alt="logoImg" />
+        <div class="navLinks">
+          <a class="btn" href="./pharmasists.html">pharmacists</a>
+          <a class="btn" href="./products.html">products</a>
+          <a class="btn" href="./sales.html">sales</a>
+          <form
+            id="logoutForm"
+            method="POST"
+            class="btn"
+            action="/logout"
+            style="padding: 0; background: transparent"
+          >
+            <input
+              type="submit"
+              value="Log Out"
+              class="logoutBtn btn alert-danger"
+            />
+          </form>
+        </div>
+        <div class="hamburger">
+          <div class="bar"></div>
+        </div>
+      </section>
+    </nav>
+    <!-- nav -->
+
+    <section class="pharmContent">
+      <section class="tableContainer">
+        <h3>Order History</h3>
+        <table id="productsTable" class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Order date</th>
+              <th>Order Amount</th>
+              <th>Customer Name</th>
+            </tr>
+          </thead>
+        </table>
+      </section>
+
+      <section class="tableContainer">
+        <h3>Order Details By Products Ordered</h3>
+        <table id="orderTable" class="table">
+          <thead>
+            <tr>
+              <th>Order Id</th>
+              <th>Product Id</th>
+              <th>Product Name</th>
+              <th>Order quantity</th>
+            </tr>
+          </thead>
+        </table>
+      </section>
+    </section>
+
+    <footer>
+      <section class="footerCenter">&copy; All Right Reserved PMS</section>
+    </footer>
+
+    <script>
+      $(document).ready(function () {
+        //fill first table
+        $.ajax({
+          type: "GET",
+          url: "/api/orderRecsWithTransacDetail",
+          success: function (result) {
+            console.log(result);
+            myData = JSON.parse(result);
+            if (myData != null || myData != "") {
+              table = $("#productsTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "order_id" },
+                  { data: "order_date" },
+                  { data: "order_amount" },
+                  { data: "customer_name" },
+                ],
+              });
+            }
+          },
+        });
+
+        //fill second table
+        $.ajax({
+          type: "GET",
+          url: "/api/orderProductRecs",
+          success: function (result) {
+            console.log(result);
+            myData = JSON.parse(result);
+            if (myData != null || myData != "") {
+              table = $("#orderTable").DataTable({
+                data: myData,
+                destroy: true,
+                columns: [
+                  { data: "order_id" },
+                  { data: "product_id" },
+                  { data: "product_name" },
+                  { data: "orderProd_qty" },
+                ],
+              });
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
