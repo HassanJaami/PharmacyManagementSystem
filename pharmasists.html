@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PMS</title>
+  <!-- <link
+      type="text/css"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/index.css') }}"
+    /> -->
+  <link rel="stylesheet" href="../styles/index.css" />
+
+  <!-- for table -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css" />
+
+  <script src="http://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+  <!-- for table -->
+</head>
+
+<body>
+  <!-- model -->
+  <section class="model">this is a model</section>
+
+  <!-- nav -->
+  <nav>
+    <section class="navCenter">
+      <img class="dashboardLogo" src="../images/logo.png" alt="logoImg" />
+      <div class="navLinks">
+        <a class="btn" href="./pharmasists.html">pharmacists</a>
+        <a class="btn" href="./products.html">products</a>
+        <a class="btn" href="./sales.html">sales</a>
+        <form id="logoutForm" method="POST" class="btn" action="/logout" style="padding: 0; background: transparent">
+          <input type="submit" value="Log Out" class="logoutBtn btn alert-danger" />
+        </form>
+      </div>
+      <div class="hamburger">
+        <div class="bar"></div>
+      </div>
+    </section>
+  </nav>
+
+  <!-- pharm options -->
+  <section class="pharmOptions">
+    <a href="#addPharmForm" class="addPharmBtn btn">Add Pharmacist</a>
+  </section>
+
+  <!-- pharm table -->
+
+  <section class="tableContainer">
+    <h3>Pharmacists List</h3>
+    <table id="pharmTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>UserName</th>
+          <th>Phone</th>
+          <th>Salary</th>
+          <th>Password</th>
+        </tr>
+      </thead>
+    </table>
+    <a id="deletePharmBtn" class="btn">Delete Selected</a>
+    <a href="#updatePharmForm" id="updatePharmBtn" class="btn">Update Selected</a>
+  </section>
+
+  <!-- add pharm form -->
+  <form id="addPharmForm" class="form" action="" method="">
+    <h3>Add pharmacist</h3>
+    <div class="form-row">
+      <label class="form-label">Name </label>
+      <input class="form-input" type="text" name="name" required />
+    </div>
+    <div class="form-row">
+      <label class="form-label">User Name </label>
+      <input required class="form-input" type="text" name="userName" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Phone </label>
+      <input required class="form-input" type="text" name="phone" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Salary</label>
+      <input required class="form-input" type="number" name="salary" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Password </label>
+      <input required class="form-input" type="text" name="password" />
+    </div>
+    <input type="submit" id="addPharmSubmit" class="btn" value="Add pharmacist"></input>
+  </form>
+
+  <!-- update pharm form -->
+  <form id="updatePharmForm" class="form" action="" method="">
+    <h3>Update pharmacist</h3>
+    <div class="form-row">
+      <label class="form-label">Name </label>
+      <input class="form-input" type="text" name="name" required />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Phone </label>
+      <input required class="form-input" type="text" name="phone" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Salary</label>
+      <input required class="form-input" type="number" name="salary" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Password </label>
+      <input required class="form-input" type="text" name="password" />
+    </div>
+    <input type="submit" id="updatePharmSubmit" class="btn" value="Update pharmacist"></input>
+  </form>
+  <!-- <input type="submit" id="updatePharmSubmit" class="btn" value="Update pharmacist"></input> -->
+
+  <footer>
+    <section class="footerCenter">&copy; All Right Reserved PMS</section>
+  </footer>
+  <script>
+    let hamburger = document.querySelector( ".hamburger" );
+    hamburger.addEventListener( "click", () =>
+    {
+      document.querySelector( ".navLinks" ).classList.toggle( "active" );
+    } );
+
+    document.querySelector( '.addPharmBtn' ).addEventListener( 'click', () =>
+    {
+      document.querySelector( '#addPharmForm' ).classList.add
+        ( 'show' );
+    } )
+
+
+  </script>
+
+  <script>
+    function hideModel()
+    {
+      document.querySelector( ".model" ).style.display = "none";
+    }
+    function showModel( content, time )
+    {
+      $( ".model" ).text( content );
+      $( ".model" ).css( "display", "block" );
+      setTimeout( hideModel, time );
+    }
+    // form to add pharmacist:
+    $( document ).ready( function ()
+    {
+
+      // Ignore default submission but keep 'required' attribute:
+      document.querySelector( "#addPharmForm" ).addEventListener( "submit", function ( evt )
+      {
+        evt.preventDefault();
+
+        // send ajax
+        var formdata = $( "#addPharmForm" ).serializeArray();
+        var data = {};
+        $( formdata ).each( function ( index, obj )
+        {
+          data[obj.name] = obj.value;
+        } );
+        let userName = data.userName;
+        data = JSON.stringify( data );
+
+        console.log( data );
+        console.log( userName );
+
+        $.ajax( {
+          url: "/api/pharmacist/" + userName, // url where to submit the request
+          type: "POST", // type of action POST || GET
+          data: data, // post data || get data
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          success: function ( result )
+          {
+            // you can see the result from the console
+            // tab of the developer tools
+            console.log( result );
+            window.location.reload();
+          },
+          error: function ( xhr, resp, text )
+          {
+            console.log( "nooooooooooooooooo" );
+            console.log( this.url );
+            console.log( xhr, resp, text );
+          },
+        } );
+      } )
+
+
+      //update a pharmasist
+      $( "#updatePharmBtn" ).click( ( e ) =>
+      {
+        let selectedRow = table.row( ".selected" );
+        if ( !selectedRow.data() )
+        {
+          //if no row is selected
+          showModel( "Please select a pharmasist!!", 2000 );
+          return;
+        }
+        document.querySelector( '#updatePharmForm' ).classList.add
+          ( 'show' );
+      } );
+
+      // click on button to update pharm
+      $( "#updatePharmSubmit" ).on( "click", function ( event )
+      {
+        event.preventDefault();
+        let selectedRow = table.row( ".selected" );
+        if ( !selectedRow.data() )
+        {
+          //if no row is selected
+          showModel( "Please select a pharmasist!!", 2000 );
+          return;
+        }
+
+        let userName = selectedRow.data().pharmacist_userName; //get userName of selected row
+
+        // send ajax
+        var formdata = $( "#updatePharmForm" ).serializeArray();
+        var data = {};
+        data["userName"] = userName;
+        $( formdata ).each( function ( index, obj )
+        {
+          data[obj.name] = obj.value;
+        } );
+        data = JSON.stringify( data );
+
+        console.log( data );
+
+        $.ajax( {
+          url: "/api/pharmacist/" + userName, // url where to submit the request
+          type: "PUT", // type of action POST || GET
+          data: data, // post data || get data
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          success: function ( result )
+          {
+            // you can see the result from the console
+            // tab of the developer tools
+            console.log( result );
+            //window.location.reload();
+            window.location.href = "pharmasists.html"
+          },
+          error: function ( xhr, resp, text )
+          {
+            console.log( "nooooooooooooooooo" );
+            console.log( this.url );
+            console.log( xhr, resp, text );
+          },
+        } );
+      } );
+
+      // button to delete pharmacist
+
+      var table = $( "#pharmTable" ).DataTable();
+
+      $( "#pharmTable tbody" ).on( "click", "tr", function ()
+      {
+        if ( $( this ).hasClass( "selected" ) )
+        {
+          $( this ).removeClass( "selected" );
+        } else
+        {
+          table.$( "tr.selected" ).removeClass( "selected" );
+          $( this ).addClass( "selected" );
+        }
+      } );
+
+      $( "#deletePharmBtn" ).click( function ()
+      {
+        let selectedRow = table.row( ".selected" );
+
+        if ( !selectedRow.data() )
+        {
+          //if now row is selected
+          showModel( "Please select a pharmasist!!", 2000 );
+          return;
+        }
+
+        userName = selectedRow.data().pharmacist_userName; //get userName of selected row
+        $.ajax( {
+          url: "/api/pharmacist/" + userName, // url where to submit the request
+          type: "DELETE", // type of action POST || GET
+          //data: userName, // post data || get data
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          success: function ( result )
+          {
+            // you can see the result from the console
+            // tab of the developer tools
+            console.log( result );
+            selectedRow.remove().draw( false );
+          },
+          error: function ( xhr, resp, text )
+          {
+            console.log( "nooooooooooooooooo" );
+            console.log( this.url );
+            console.log( xhr, resp, text );
+          },
+        } );
+      } );
+
+      // button to fetch all pharmacists
+      $.ajax( {
+        url: "/api/pharmacists", // url where to submit the request
+        type: "GET", // type of action POST || GET
+        success: function ( result )
+        {
+          console.log( result );
+          myData = JSON.parse( result );
+          if ( myData != null || myData != "" )
+          {
+            table = $( "#pharmTable" ).DataTable( {
+              data: myData,
+              destroy: true,
+              columns: [
+                { data: "pharmacist_name" },
+                { data: "pharmacist_userName" },
+                { data: "pharmacist_phoneNo" },
+                { data: "pharmacist_salary" },
+                { data: "pharmacist_password" },
+              ],
+            } );
+          }
+        },
+        error: function ( xhr, resp, text )
+        {
+          console.log( "nooooooooooooooooo" );
+          console.log( this.url );
+          console.log( xhr, resp, text );
+        },
+      } );
+    } );
+  </script>
+</body>
+
+</html>
